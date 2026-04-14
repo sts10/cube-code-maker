@@ -62,7 +62,7 @@ pub fn create_cutter_ranges(map: HashMap<String, usize>, start: usize, end: usiz
     let percentage_bucket_width: f64 = 1.0 / (end - start - 9) as f64;
     let mut range_map: Vec<usize> = [].to_vec();
     let mut running_percentage_total: f64 = 0.0;
-    let mut number_to_assign: usize = start; //11 or 21 are good choices?
+    let mut number_to_assign: usize = start;
 
     for percentage in percentages {
         range_map.push(number_to_assign);
@@ -70,7 +70,6 @@ pub fn create_cutter_ranges(map: HashMap<String, usize>, start: usize, end: usiz
         if running_percentage_total > percentage_bucket_width {
             // this is a bit shoddy
             running_percentage_total = running_percentage_total - percentage_bucket_width;
-            // running_percentage_total = 0.0;
             if number_to_assign < end {
                 number_to_assign += 1;
                 // if number ends in a 0, skip that number by adding 1
