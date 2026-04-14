@@ -1,16 +1,14 @@
 use cube_code::create_cutter_ranges;
 use cube_code::make_map_for_fourth_and_fifth;
 use cube_code::make_map_for_starting_with_given_letter;
-use serde_json;
 use std::collections::HashMap;
 use std::fs::File;
 use std::io::BufRead;
 use std::io::BufReader;
 use std::io::Write;
-// use std::path::PathBuf;
 
 fn main() {
-    // Read creator-names.alpha.txt into Vector clled creator_names
+    // Read creator-names-alpha.txt into Vector clled creator_names
     let creator_names = read_creators();
 
     let alphabet: String = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".to_string();
@@ -32,11 +30,6 @@ fn main() {
         "Additional: {:?}",
         create_cutter_ranges(fourth_and_fifth_map.clone(), 21, 99)
     );
-    // write_json_out(b_second_letter_map.clone()).expect("Unable to write to JSON file.");
-
-    // let mut as_tupes: Vec<(char, usize)> = b_second_letter_map.into_iter().collect::<Vec<_>>();
-    // as_tupes.sort_by_key(|&(chr, _count)| chr);
-    // println!("sorted, b map is\n{:?}", as_tupes);
 }
 
 fn read_creators() -> Vec<String> {
