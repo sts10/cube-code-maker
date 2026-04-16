@@ -1,3 +1,4 @@
+use clap::Parser;
 use cube_code::create_cutter_ranges;
 use cube_code::make_map_for_fourth_and_fifth;
 use cube_code::make_map_for_starting_with_given_letter;
@@ -6,10 +7,19 @@ use std::fs::File;
 use std::io::BufRead;
 use std::io::BufReader;
 use std::io::Write;
+use std::path::PathBuf;
+
+#[derive(Parser)]
+#[command(version, about, long_about = None)]
+struct Cli {
+    /// Text file with list of authors to map
+    #[clap(name = "AUTHORS FILE")]
+    authors_file: PathBuf,
+}
 
 fn main() {
-    // Read creator-names-alpha.txt into Vector clled creator_names
-    let creator_names = read_creators();
+    let cli = Cli::parse();
+    let creator_names = read_creators(cli.authors_file);
 
     let alphabet: String = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".to_string();
 
@@ -32,9 +42,9 @@ fn main() {
     );
 }
 
-fn read_creators() -> Vec<String> {
+fn read_creators(file_name: PathBuf) -> Vec<String> {
     let mut creators = vec![];
-    let f = match File::open("creator-names-alpha.txt") {
+    let f = match File::open(file_name) {
         Ok(file) => file,
         Err(_e) => panic!("Error opening creators-names txt file"),
     };
