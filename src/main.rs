@@ -2,7 +2,7 @@ use clap::Parser;
 use cube_code::create_cutter_ranges;
 use cube_code::make_map_for_fourth_and_fifth;
 use cube_code::make_map_for_starting_with_given_letter;
-use std::collections::HashMap;
+// use std::collections::HashMap;
 use std::fs::File;
 use std::io::BufRead;
 use std::io::BufReader;
@@ -19,7 +19,8 @@ struct Cli {
 
 fn main() {
     let cli = Cli::parse();
-    let creator_names = read_creators(cli.authors_file);
+    let creator_names_file = cli.authors_file;
+    let creator_names = read_creators(creator_names_file.clone());
 
     let alphabet: String = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".to_string();
 
@@ -27,19 +28,21 @@ fn main() {
         let second_and_third_letter_map =
             make_map_for_starting_with_given_letter(letter.to_string(), &creator_names);
 
-        println!(
-            "{}: {:?}",
-            letter,
-            create_cutter_ranges(second_and_third_letter_map.clone(), 1, 99)
-        );
+        append_ranges_out(
+            Some(letter.to_string()),
+            create_cutter_ranges(second_and_third_letter_map.clone(), 1, 99),
+            creator_names_file.clone(),
+        )
+        .unwrap();
     }
-    println!("Additional (fourth and on) letter map:");
-    let fourth_and_fifth_map = make_map_for_fourth_and_fifth(&creator_names);
 
-    println!(
-        "Additional: {:?}",
-        create_cutter_ranges(fourth_and_fifth_map.clone(), 21, 99)
-    );
+    let fourth_and_fifth_map = make_map_for_fourth_and_fifth(&creator_names);
+    append_ranges_out(
+        None,
+        create_cutter_ranges(fourth_and_fifth_map.clone(), 21, 99),
+        creator_names_file.clone(),
+    )
+    .unwrap();
 }
 
 fn read_creators(file_name: PathBuf) -> Vec<String> {
@@ -57,10 +60,28 @@ fn read_creators(file_name: PathBuf) -> Vec<String> {
     }
     creators
 }
-fn _write_json_out(map: HashMap<char, usize>) -> std::io::Result<()> {
-    let json_string = serde_json::to_string(&map).expect("Failed to serialize HashMap to JSON");
-    let mut file = File::create("map.json")?;
-    file.write_all(json_string.as_bytes())?;
+use std::fs::OpenOptions;
+fn append_ranges_out(
+    letter: Option<String>,
+    ranges: Vec<usize>,
+    inputted_file_name: PathBuf,
+) -> std::io::Result<()> {
+    let output_file_name = format!("{}-cube-map.txt", inputted_file_name.display());
+    // let mut file = File::create(output_file_name)?;
+    let mut file = OpenOptions::new()
+        .write(true)
+        .append(true)
+        .create(true)
+        .open(output_file_name)?;
+    match letter {
+        Some(letter) => writeln!(file, "{}: [", letter)?,
+        None => writeln!(file, "additionalCharacters: [")?,
+    }
 
+    for num in ranges {
+        write!(file, "{}, ", num)?;
+    }
+
+    write!(file, "];\n\n")?;
     Ok(())
 }
