@@ -30,7 +30,7 @@ fn main() {
 
         append_ranges_out(
             Some(letter.to_string()),
-            create_cutter_ranges(second_and_third_letter_map.clone(), 1, 99),
+            create_cutter_ranges(second_and_third_letter_map.clone(), 21, 99),
             creator_names_file.clone(),
         )
         .unwrap();
