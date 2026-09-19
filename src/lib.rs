@@ -48,15 +48,12 @@ pub fn create_cutter_ranges(map: HashMap<String, usize>, start: usize, end: usiz
     let occurence_total: usize = map.values().sum();
 
     // We don't want our cutter number to end in a 0, so
-    // we'll remove 7 numbers for ending in 0 (30, 40, 50, 60, 70, 80, 90)
+    // we'll remove 7 buckets for ending in 0 (30, 40, 50, 60, 70, 80, 90)
     let number_of_buckets_we_have_total = (end - start) - 7;
     // This variable occurences_per_bucket_threshold is the number of second+third letter
     // occurance that we want to put in each "bucket", e.g. 21, 22, 23... 99.
     let occurences_per_bucket_threshold: usize = occurence_total / number_of_buckets_we_have_total; // would floor this if I could?
 
-    // We don't want our cutter number to end in a 0, so
-    // we'll remove 7 numbers for ending in 0 (30, 40, 50, 60, 70, 80, 90)
-    // let percentage_bucket_width: f64 = 1.0 / (end - start - 7) as f64;
     let mut range_map: Vec<usize> = [].to_vec();
     let mut number_of_the_bucket_we_are_assigning_currently: usize = start;
     let mut this_buckets_current_total: usize = 0;
@@ -70,9 +67,13 @@ pub fn create_cutter_ranges(map: HashMap<String, usize>, start: usize, end: usiz
                 Some(letter_pair_occurences) => letter_pair_occurences,
                 None => &0, // never occurred. we'll use 0
             };
+            // if you're not getting to 96 or 99, increase this number. I think.
+            // 2.0 seems good so far...
+            let bucket_overflow_sensitivity = 1.1;
             // What would this bucket look like if we added only have of this pair's occurences?
-            let this_bucket_total_after_half_this_addition = this_buckets_current_total
-                + (*this_pairs_number_of_occurences as f64 / 2.0).ceil() as usize;
+            let this_bucket_total_after_half_this_addition =
+                ((*this_pairs_number_of_occurences as f64) * bucket_overflow_sensitivity).ceil()
+                    as usize;
 
             // if it doesn't overflow our current bucket...
             if this_bucket_total_after_half_this_addition <= occurences_per_bucket_threshold {
@@ -97,6 +98,8 @@ pub fn create_cutter_ranges(map: HashMap<String, usize>, start: usize, end: usiz
             }
         }
     }
+
+    eprintln!("last cutter is {}", range_map[range_map.len() - 1]);
     range_map
 }
 
