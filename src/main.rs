@@ -32,6 +32,7 @@ fn main() {
             make_map_for_starting_with_given_letter(letter.to_string(), &creator_names);
 
         let mut bucket_overflow_sensitivity = 1.5;
+        let mut bucket_overflow_step = 0.05;
         let mut this_letters_cutter_ranges = create_cutter_ranges(
             second_and_third_letter_map.clone(),
             first_cutter_number_to_assign,
@@ -41,8 +42,8 @@ fn main() {
         let mut last_cutter_number_assigned =
             this_letters_cutter_ranges[this_letters_cutter_ranges.len() - 1];
 
-        while last_cutter_number_assigned < 95 {
-            bucket_overflow_sensitivity = bucket_overflow_sensitivity + 0.1;
+        while last_cutter_number_assigned < 94 || last_cutter_number_assigned > 103 {
+            bucket_overflow_sensitivity = bucket_overflow_sensitivity + bucket_overflow_step;
             this_letters_cutter_ranges = create_cutter_ranges(
                 second_and_third_letter_map.clone(),
                 first_cutter_number_to_assign,
@@ -51,7 +52,18 @@ fn main() {
             );
             last_cutter_number_assigned =
                 this_letters_cutter_ranges[this_letters_cutter_ranges.len() - 1];
+            if last_cutter_number_assigned > 97 && letter != 'X' {
+                eprintln!("I overshot to {}", last_cutter_number_assigned);
+                // Cutter numbers went too high!
+                bucket_overflow_sensitivity = 1.4;
+                bucket_overflow_step = bucket_overflow_step / 2.0;
+            }
         }
+
+        eprintln!(
+            "For letter {}, last cutter assigned was {}",
+            letter, last_cutter_number_assigned
+        );
 
         append_ranges_out(
             Some(letter.to_string()),
