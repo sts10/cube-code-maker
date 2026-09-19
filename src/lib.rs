@@ -50,8 +50,9 @@ pub fn create_cutter_ranges(
     let occurence_total: usize = map.values().sum();
 
     // We don't want our cutter number to end in a 0, so
-    // we'll remove 7 buckets for ending in 0 (30, 40, 50, 60, 70, 80, 90)
-    let number_of_buckets_we_have_total = (end - start) - 7;
+    // we'll remove 7 buckets for ending in 0 (30, 31, 40, 41, 50, 51, 60, 61, 70, 71, 80, 81, 90,
+    // 91)
+    let number_of_buckets_we_have_total = (end - start) - 14;
     // This variable occurences_per_bucket_threshold is the number of second+third letter
     // occurance that we want to put in each "bucket", e.g. 21, 22, 23... 99.
     let occurences_per_bucket_threshold: usize = occurence_total / number_of_buckets_we_have_total; // would floor this if I could?
@@ -90,7 +91,7 @@ pub fn create_cutter_ranges(
                 // (see comment above)
                 if number_of_the_bucket_we_are_assigning_currently.is_multiple_of(10) {
                     number_of_the_bucket_we_are_assigning_currently =
-                        number_of_the_bucket_we_are_assigning_currently + 1;
+                        number_of_the_bucket_we_are_assigning_currently + 2;
                 }
 
                 this_buckets_current_total = 0;

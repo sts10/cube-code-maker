@@ -22,7 +22,7 @@ fn main() {
     let creator_names_file = cli.authors_file;
     let creator_names = read_creators(creator_names_file.clone());
     // Could make these CLI parameters...
-    let first_cutter_number_to_assign = 21;
+    let first_cutter_number_to_assign = 22;
     let last_cutter_number_to_assign = 99;
 
     let alphabet: String = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".to_string();
