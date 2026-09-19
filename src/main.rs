@@ -21,6 +21,9 @@ fn main() {
     let cli = Cli::parse();
     let creator_names_file = cli.authors_file;
     let creator_names = read_creators(creator_names_file.clone());
+    // Could make these CLI parameters...
+    let first_cutter_number_to_assign = 21;
+    let last_cutter_number_to_assign = 99;
 
     let alphabet: String = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".to_string();
 
@@ -28,9 +31,31 @@ fn main() {
         let second_and_third_letter_map =
             make_map_for_starting_with_given_letter(letter.to_string(), &creator_names);
 
+        let mut bucket_overflow_sensitivity = 1.5;
+        let mut this_letters_cutter_ranges = create_cutter_ranges(
+            second_and_third_letter_map.clone(),
+            first_cutter_number_to_assign,
+            last_cutter_number_to_assign,
+            bucket_overflow_sensitivity,
+        );
+        let mut last_cutter_number_assigned =
+            this_letters_cutter_ranges[this_letters_cutter_ranges.len() - 1];
+
+        while last_cutter_number_assigned < 95 {
+            bucket_overflow_sensitivity = bucket_overflow_sensitivity + 0.1;
+            this_letters_cutter_ranges = create_cutter_ranges(
+                second_and_third_letter_map.clone(),
+                first_cutter_number_to_assign,
+                last_cutter_number_to_assign,
+                bucket_overflow_sensitivity,
+            );
+            last_cutter_number_assigned =
+                this_letters_cutter_ranges[this_letters_cutter_ranges.len() - 1];
+        }
+
         append_ranges_out(
             Some(letter.to_string()),
-            create_cutter_ranges(second_and_third_letter_map.clone(), 21, 99),
+            this_letters_cutter_ranges,
             creator_names_file.clone(),
         )
         .unwrap();
@@ -39,7 +64,12 @@ fn main() {
     let fourth_and_fifth_map = make_map_for_fourth_and_fifth(&creator_names);
     append_ranges_out(
         None,
-        create_cutter_ranges(fourth_and_fifth_map.clone(), 21, 99),
+        create_cutter_ranges(
+            fourth_and_fifth_map.clone(),
+            first_cutter_number_to_assign,
+            last_cutter_number_to_assign,
+            3.6,
+        ),
         creator_names_file.clone(),
     )
     .unwrap();

@@ -21,9 +21,6 @@ pub fn make_map_for_starting_with_given_letter(
                 .or_insert(1);
         }
     }
-    if first_letter.to_lowercase() == "b" {
-        eprintln!("B map is: {:?}\n", second_and_third_letter_map);
-    }
     second_and_third_letter_map
 }
 
@@ -44,7 +41,12 @@ pub fn make_map_for_fourth_and_fifth(names: &[String]) -> HashMap<String, usize>
     fourth_and_fifth_map
 }
 
-pub fn create_cutter_ranges(map: HashMap<String, usize>, start: usize, end: usize) -> Vec<usize> {
+pub fn create_cutter_ranges(
+    map: HashMap<String, usize>,
+    start: usize,
+    end: usize,
+    bucket_overflow_sensitivity: f64,
+) -> Vec<usize> {
     let occurence_total: usize = map.values().sum();
 
     // We don't want our cutter number to end in a 0, so
@@ -67,10 +69,8 @@ pub fn create_cutter_ranges(map: HashMap<String, usize>, start: usize, end: usiz
                 Some(letter_pair_occurences) => letter_pair_occurences,
                 None => &0, // never occurred. we'll use 0
             };
-            // if you're not getting to 96 or 99, increase this number. I think.
-            // 2.0 seems good so far...
-            let bucket_overflow_sensitivity = 1.1;
-            // What would this bucket look like if we added only have of this pair's occurences?
+            // What would this bucket look like if we added this letter pairs' occurences,
+            // multiplied by the given sensitivity parameter?
             let this_bucket_total_after_half_this_addition =
                 ((*this_pairs_number_of_occurences as f64) * bucket_overflow_sensitivity).ceil()
                     as usize;
@@ -99,7 +99,6 @@ pub fn create_cutter_ranges(map: HashMap<String, usize>, start: usize, end: usiz
         }
     }
 
-    eprintln!("last cutter is {}", range_map[range_map.len() - 1]);
     range_map
 }
 
